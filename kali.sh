@@ -39,6 +39,31 @@ print_status "System-Update wird durchgeführt..."
 apt update && apt upgrade -y
 apt dist-upgrade -y
 
+# Keyboard Layout auf German Switzerland setzen
+print_status "Konfiguriere Keyboard Layout auf German Switzerland..."
+setxkbmap ch
+cat > /etc/default/keyboard << 'EOF'
+XKBMODEL="pc105"
+XKBLAYOUT="ch"
+XKBVARIANT="legacy"
+XKBOPTIONS=""
+BACKSPACE="guess"
+EOF
+
+# Keyboard Layout dauerhaft für X11 setzen
+mkdir -p /etc/X11/xorg.conf.d/
+cat > /etc/X11/xorg.conf.d/00-keyboard.conf << 'EOF'
+Section "InputClass"
+        Identifier "system-keyboard"
+        MatchIsKeyboard "on"
+        Option "XkbLayout" "ch"
+        Option "XkbModel" "pc105"
+        Option "XkbVariant" "legacy"
+EndSection
+EOF
+
+print_status "Keyboard Layout wurde auf German Switzerland (legacy) gesetzt"
+
 # Nützliche Tools installieren
 print_status "Installiere zusätzliche Tools..."
 apt install -y \
@@ -169,6 +194,37 @@ print_status "Räume System auf..."
 apt autoremove -y
 apt autoclean -y
 
+# PimpMyKali herunterladen
+print_status "Lade pimpmykali herunter..."
+cd /opt/tools
+if [ ! -d "pimpmykali" ]; then
+    mkdir pimpmykali
+fi
+cd pimpmykali
+wget -O pimpmykali.sh https://raw.githubusercontent.com/Dewalt-arch/pimpmykali/refs/heads/master/pimpmykali.sh
+chmod +x pimpmykali.sh
+
+# Desktop-Verknüpfung für pimpmykali erstellen
+print_status "Erstelle Desktop-Verknüpfung für pimpmykali..."
+cat > /home/$SUDO_USER/Desktop/pimpmykali.desktop << 'EOF'
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=PimpMyKali
+Comment=Kali Linux Optimierung und Fixes
+Exec=x-terminal-emulator -e 'sudo /opt/tools/pimpmykali/pimpmykali.sh; exec bash'
+Icon=kali-menu
+Terminal=false
+Categories=System;Security;
+EOF
+
+# Verknüpfung ausführbar machen
+chmod +x /home/$SUDO_USER/Desktop/pimpmykali.desktop
+chown $SUDO_USER:$SUDO_USER /home/$SUDO_USER/Desktop/pimpmykali.desktop
+
+# Verknüpfung auch im Anwendungsmenü verfügbar machen
+cp /home/$SUDO_USER/Desktop/pimpmykali.desktop /usr/share/applications/
+
 # Abschluss
 echo ""
 echo "================================================"
@@ -180,6 +236,7 @@ echo "  sudo reboot"
 echo ""
 print_status "Installierte Features:"
 echo "  - System vollständig aktualisiert"
+echo "  - Keyboard Layout: German Switzerland (legacy)"
 echo "  - Zusätzliche Tools installiert"
 echo "  - Docker eingerichtet"
 echo "  - Python-Tools installiert"
@@ -188,4 +245,26 @@ echo "  - Nützliche Repositories geklont (/opt/tools)"
 echo "  - Bash-Aliases eingerichtet"
 echo "  - Arbeitsverzeichnisse erstellt"
 echo "  - Firewall konfiguriert"
+echo "  - pimpmykali heruntergeladen (/opt/tools/pimpmykali)"
+echo "  - Desktop-Verknüpfung für pimpmykali erstellt"
+echo ""
+print_warning "Möchtest du jetzt pimpmykali ausführen?"
+echo "  pimpmykali bietet zusätzliche Optimierungen und Fixes für Kali Linux"
+read -p "pimpmykali jetzt ausführen? (j/n): " run_pimpmykali
+
+if [ "$run_pimpmykali" = "j" ] || [ "$run_pimpmykali" = "y" ]; then
+    print_status "Führe pimpmykali aus..."
+    cd /opt/tools/pimpmykali
+    ./pimpmykali.sh
+    echo ""
+    print_status "pimpmykali abgeschlossen!"
+else
+    print_warning "pimpmykali wurde nicht ausgeführt."
+    echo "  Du kannst es später manuell ausführen mit:"
+    echo "  cd /opt/tools/pimpmykali && sudo ./pimpmykali.sh"
+fi
+
+echo ""
+print_warning "Bitte System neu starten für alle Änderungen:"
+echo "  sudo reboot"
 echo ""
