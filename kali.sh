@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Kali Linux Post-Installation Setup Script
-# Verwendung: wget https://your-url/kali-setup.sh && chmod +x kali-setup.sh && sudo ./kali-setup.sh
 
 set -e
 
@@ -67,28 +65,7 @@ print_status "Keyboard Layout wurde auf German Switzerland (legacy) gesetzt"
 # Nützliche Tools installieren
 print_status "Installiere zusätzliche Tools..."
 apt install -y \
-    git \
-
-# Docker aktivieren
-print_status "Docker wird konfiguriert..."
-systemctl enable docker
-systemctl start docker
-usermod -aG docker $SUDO_USER
-
-# Python Tools
-print_status "Installiere Python-Tools..."
-pip3 install --upgrade pip
-pip3 install pipx
-pipx ensurepath
-pip3 install impacket pwntools requests beautifulsoup4
-
-# Git Konfiguration
-print_status "Git wird konfiguriert..."
-read -p "Git Username: " git_username
-read -p "Git Email: " git_email
-git config --global user.name "$git_username"
-git config --global user.email "$git_email"
-git config --global init.defaultBranch main
+    htop \
 
 # Nützliche Repositories klonen
 print_status "Klone nützliche Tools..."
