@@ -67,27 +67,7 @@ print_status "Keyboard Layout wurde auf German Switzerland (legacy) gesetzt"
 # Nützliche Tools installieren
 print_status "Installiere zusätzliche Tools..."
 apt install -y \
-    vim \
     git \
-    curl \
-    wget \
-    tmux \
-    htop \
-    net-tools \
-    terminator \
-    gedit \
-    vlc \
-    flameshot \
-    keepassxc \
-    docker.io \
-    python3-pip \
-    gobuster \
-    seclists \
-    feroxbuster \
-    bloodhound \
-    neo4j \
-    openvpn \
-    libreoffice
 
 # Docker aktivieren
 print_status "Docker wird konfiguriert..."
@@ -239,7 +219,6 @@ echo "  - System vollständig aktualisiert"
 echo "  - Keyboard Layout: German Switzerland (legacy)"
 echo "  - Zusätzliche Tools installiert"
 echo "  - Docker eingerichtet"
-echo "  - Python-Tools installiert"
 echo "  - Git konfiguriert"
 echo "  - Nützliche Repositories geklont (/opt/tools)"
 echo "  - Bash-Aliases eingerichtet"
